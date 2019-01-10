@@ -83,8 +83,21 @@ class admin extends ecjia_admin
     {
         $this->admin_priv('agent_manage');
 
+        ecjia_screen::get_current_screen()->remove_last_nav_here();
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('区域代理列表'));
+
+        $this->assign('ur_here', '代理商列表');
+        $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/add'), 'text' => '添加代理商'));
+
 
         $this->display('agent_list.dwt');
+    }
+
+    public function rank()
+    {
+        $this->admin_priv('agent_rank_manage');
+
+        $this->display('agent_rank_list.dwt');
     }
 
 }

@@ -55,8 +55,8 @@ class agent_admin_purview_api extends Component_Event_Api
     public function call(&$options)
     {
         $purviews = array(
-            array('action_name' => '', 'action_code' => 'agent_manage', 'relevance' => ''),
-
+            array('action_name' => '区域代理', 'action_code' => 'agent_manage', 'relevance' => ''),
+            array('action_name' => '区域代理等级', 'action_code' => 'agent_rank_manage', 'relevance' => ''),
         );
         return $purviews;
     }
