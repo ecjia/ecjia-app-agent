@@ -56,6 +56,9 @@ class agent_admin_purview_api extends Component_Event_Api
     {
         $purviews = array(
             array('action_name' => '区域代理', 'action_code' => 'agent_manage', 'relevance' => ''),
+            array('action_name' => '更新区域代理', 'action_code' => 'agent_update', 'relevance' => ''),
+            array('action_name' => '删除区域代理', 'action_code' => 'agent_delete', 'relevance' => ''),
+
             array('action_name' => '区域代理等级', 'action_code' => 'agent_rank_manage', 'relevance' => ''),
         );
         return $purviews;
