@@ -19,16 +19,20 @@
 
 <div class="row-fluid">
 	<div class="span12">
-		<table class="table table-stripedtable-hide-edit">
+		<table class="table table-striped table-hide-edit">
 			<thead>
 				<tr>
-
+                    <th>等级名称</th>
+                    <th>分红比例</th>
+                    <th>操作</th>
                 </tr>
 			</thead>
 			<tbody>
                 <!-- {foreach from=$list item=val} -->
                 <tr>
-
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 <!-- {foreachelse} -->
                 <tr><td class="no-records" colspan="7">{lang key='system::system.no_records'}</td></tr>

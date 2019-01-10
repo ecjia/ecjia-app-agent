@@ -47,10 +47,10 @@
 defined('IN_ECJIA') or exit('No permission resources.');
 
 /**
- * ECJIA 区域代理
+ * ECJIA 代理等级
  *
  */
-class admin extends ecjia_admin
+class admin_rank extends ecjia_admin
 {
     public function __construct()
     {
@@ -77,95 +77,44 @@ class admin extends ecjia_admin
         RC_Script::enqueue_script('agent', RC_App::apps_url('statics/js/agent.js', __FILE__));
         RC_Style::enqueue_style('agent', RC_App::apps_url('statics/css/agent.css', __FILE__));
 
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('代理商列表', RC_Uri::url('agent/admin/init')));
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('代理等级', RC_Uri::url('agent/admin_rank/init')));
     }
 
     public function init()
     {
-        $this->admin_priv('agent_manage');
+        $this->admin_priv('agent_rank_manage');
 
         ecjia_screen::get_current_screen()->remove_last_nav_here();
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('代理商列表'));
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('代理等级'));
 
-        $this->assign('ur_here', '代理商列表');
-        $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/add'), 'text' => '添加代理商'));
+        $this->assign('ur_here', '代理等级');
 
-        $this->display('agent_list.dwt');
-    }
-
-    public function add()
-    {
-        $this->admin_priv('agent_update');
-
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('添加代理商'));
-
-        $this->assign('ur_here', '添加代理商');
-        $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/init'), 'text' => '代理商列表'));
-        $this->assign('form_action', RC_Uri::url('agent/admin/insert'));
-
-        $province = ecjia_region::getSubarea(ecjia::config('shop_country'));
-        $city     = ecjia_region::getSubarea();
-        $district = ecjia_region::getSubarea();
-
-        $this->assign('province', $province);
-        $this->assign('city', $city);
-        $this->assign('district', $district);
-
-        $this->display('agent_edit.dwt');
-    }
-
-    public function insert()
-    {
-        $this->admin_priv('agent_update', ecjia::MSGTYPE_JSON);
-
-        $id = 0;
-
-        return $this->showmessage('添加成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin/edit', array('id' => $id))));
+        $this->display('agent_rank_list.dwt');
     }
 
     public function edit()
     {
-        $this->admin_priv('agent_update');
+        $this->admin_priv('agent_rank_update');
 
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('编辑代理商'));
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('编辑代理等级'));
 
-        $this->assign('ur_here', '编辑代理商');
-        $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/init'), 'text' => '代理商列表'));
-        $this->assign('form_action', RC_Uri::url('agent/admin/update'));
+        $this->assign('ur_here', '编辑代理等级');
+        $this->assign('action_link', array('href' => RC_Uri::url('agent/admin_rank/init'), 'text' => '代理商列表'));
+        $this->assign('form_action', RC_Uri::url('agent/admin_rank/update'));
 
-        $province = ecjia_region::getSubarea(ecjia::config('shop_country'));
-        $city     = ecjia_region::getSubarea();
-        $district = ecjia_region::getSubarea();
-
-        $this->assign('province', $province);
-        $this->assign('city', $city);
-        $this->assign('district', $district);
-
-        $this->display('agent_edit.dwt');
+        $this->display('agent_rank_edit.dwt');
     }
 
     public function update()
     {
-        $this->admin_priv('agent_update', ecjia::MSGTYPE_JSON);
+        $this->admin_priv('agent_rank_update', ecjia::MSGTYPE_JSON);
 
         return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
     }
 
-    public function detail()
-    {
-        $this->admin_priv('agent_manage');
-
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('代理商详情'));
-
-        $this->assign('ur_here', '代理商详情');
-        $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/init'), 'text' => '代理商列表'));
-
-        $this->display('agent_detail.dwt');
-    }
-
     public function delete()
     {
-        $this->admin_priv('agent_delete', ecjia::MSGTYPE_JSON);
+        $this->admin_priv('agent_rank_delete', ecjia::MSGTYPE_JSON);
     }
 
 }

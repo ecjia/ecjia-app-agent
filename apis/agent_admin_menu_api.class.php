@@ -59,7 +59,7 @@ class agent_admin_menu_api extends Component_Event_Api
 
         $submenus = array(
             ecjia_admin::make_admin_menu('agent_list', '代理商列表', RC_Uri::url('agent/admin/init'), 1)->add_purview('agent_manage'),
-            ecjia_admin::make_admin_menu('agent_rank_list', '代理等级', RC_Uri::url('agent/admin/rank'), 2)->add_purview('agent_rank_manage')
+            ecjia_admin::make_admin_menu('agent_rank_list', '代理等级', RC_Uri::url('agent/admin_rank/init'), 2)->add_purview('agent_rank_manage')
         );
         $menus->add_submenu($submenus);
 
