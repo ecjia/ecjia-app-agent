@@ -66,7 +66,14 @@
             <tbody>
                 <!-- {foreach from=$list item=val} -->
                 <tr>
-
+                    <td>{$val.agent_name}</td>
+                    <td>{$val.mobile_phone}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 <!-- {foreachelse} -->
                 <tr>

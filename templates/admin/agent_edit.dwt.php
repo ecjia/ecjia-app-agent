@@ -23,7 +23,7 @@
             <div class="control-group formSep">
                 <label class="control-label">代理商名称：</label>
                 <div class="controls">
-                    <input class="span4" type="text" name="agent_name" value="{$data.name}" />
+                    <input class="span6" type="text" name="agent_name" value="{$data.name}" />
                     <span class="input-must">{lang key='system::system.require_field'}</span>
                 </div>
             </div>
@@ -31,7 +31,7 @@
             <div class="control-group formSep">
                 <label class="control-label">手机号码：</label>
                 <div class="controls">
-                    <input class="span4" type="text" name="mobile_phone" value="{$data.mobile_phone}" />
+                    <input class="span6" type="text" name="mobile_phone" value="{$data.mobile_phone}" />
                     <span class="input-must">{lang key='system::system.require_field'}</span>
                 </div>
             </div>
@@ -39,14 +39,14 @@
             <div class="control-group formSep">
                 <label class="control-label">邮箱账号：</label>
                 <div class="controls">
-                    <input class="span4" type="text" name="email" value="{$data.email}" autocomplete="off" />
+                    <input class="span6" type="text" name="email" value="{$data.email}" autocomplete="off" />
                 </div>
             </div>
 
             <div class="control-group formSep">
                 <label class="control-label">登录密码：</label>
                 <div class="controls">
-                    <input class="span4" type="text" name="login_password" value="" autocomplete="off" />
+                    <input class="span6" type="text" name="login_password" value="" autocomplete="off" />
                     <span class="input-must">{lang key='system::system.require_field'}</span>
                 </div>
             </div>

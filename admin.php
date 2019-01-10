@@ -76,7 +76,7 @@ class admin extends ecjia_admin
 
         RC_Script::enqueue_script('agent', RC_App::apps_url('statics/js/agent.js', __FILE__));
 
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('区域代理列表', RC_Uri::url('agent/admin/init')));
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('代理商列表', RC_Uri::url('agent/admin/init')));
     }
 
     public function init()
@@ -84,7 +84,7 @@ class admin extends ecjia_admin
         $this->admin_priv('agent_manage');
 
         ecjia_screen::get_current_screen()->remove_last_nav_here();
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('区域代理列表'));
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('代理商列表'));
 
         $this->assign('ur_here', '代理商列表');
         $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/add'), 'text' => '添加代理商'));
@@ -149,6 +149,18 @@ class admin extends ecjia_admin
         $this->admin_priv('agent_update', ecjia::MSGTYPE_JSON);
 
         return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+    }
+
+    public function detail()
+    {
+        $this->admin_priv('agent_manage');
+
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('代理商详情'));
+
+        $this->assign('ur_here', '代理商详情');
+        $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/init'), 'text' => '代理商列表'));
+
+        $this->display('agent_detail.dwt');
     }
 
     public function delete()
