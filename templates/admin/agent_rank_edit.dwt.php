@@ -28,7 +28,7 @@
             <div class="control-group formSep">
                 <label class="control-label">分红比例：</label>
                 <div class="controls">
-                    <input class="span6" type="text" name="mobile_phone" value="{$data.mobile_phone}" /> %
+                    <input class="span6" type="text" name="affiliate_percent" value="{$data.affiliate_percent}" /> %
                     <span class="input-must">{lang key='system::system.require_field'}</span>
                     <span class="help-block">请设置代理商的分红百分比</span>
                 </div>
