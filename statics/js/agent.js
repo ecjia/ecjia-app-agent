@@ -2,10 +2,38 @@
 ;(function (app, $) {
     app.agent = {
         init: function () {
+            app.agent.search();
             app.agent.submit_form();
             app.agent.stop_propagation();//阻止冒泡事件
         },
 
+        search: function () {
+            $('.search-btn').off('click').on('click', function (e) {
+                e.preventDefault();
+
+                var $this = $(this),
+                    url = $this.attr('data-url'),
+                    keywords = $('input[name="keywords"]').val();
+
+                if (keywords != '' && keywords != undefined) {
+                    url += '&keywords=' + keywords;
+                }
+                ecjia.pjax(url);
+            });
+
+            $('.filter-btn').off('click').on('click', function (e) {
+                e.preventDefault();
+
+                var $this = $(this),
+                    url = $this.attr('data-url'),
+                    agent_rank = $('select[name="agent_rank"]').val();
+
+                if (agent_rank != 0 && agent_rank != undefined) {
+                    url += '&agent_rank=' + agent_rank;
+                }
+                ecjia.pjax(url);
+            });
+        },
         submit_form: function () {
             var $form = $("form[name='theForm']");
             var option = {

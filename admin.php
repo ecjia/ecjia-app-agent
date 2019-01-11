@@ -90,6 +90,9 @@ class admin extends ecjia_admin
         $this->assign('ur_here', '代理商列表');
         $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/add'), 'text' => '添加代理商'));
 
+        $list = $this->get_agent_list();
+        $this->assign('list', $list);
+
         $this->display('agent_list.dwt');
     }
 
@@ -118,7 +121,54 @@ class admin extends ecjia_admin
     {
         $this->admin_priv('agent_update', ecjia::MSGTYPE_JSON);
 
-        $id = 0;
+        $name           = trim($_POST['agent_name']);
+        $mobile_phone   = trim($_POST['mobile_phone']);
+        $email          = trim($_POST['email']);
+        $login_password = trim($_POST['login_password']);
+        $salt           = rand(1, 9999);
+
+        if (empty($name)) {
+            return $this->showmessage('请输入代理商名称', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        if (empty($mobile_phone)) {
+            return $this->showmessage('请输入手机号码', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        if (empty($login_password)) {
+            return $this->showmessage('请输入登录密码', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $name_count = RC_DB::table('staff_user')->where('name', $name)->count();
+        if ($name_count > 0) {
+            return $this->showmessage('该代理商名称已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $check_mobile = Ecjia\App\Sms\Helper::check_mobile($mobile_phone);
+        if (is_ecjia_error($check_mobile)) {
+            return $this->showmessage($check_mobile->get_error_message(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $mobile_count = RC_DB::table('staff_user')->where('mobile', $mobile_phone)->count();
+        if ($mobile_count > 0) {
+            return $this->showmessage('该手机号码已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $email_count = RC_DB::table('staff_user')->where('email', $email)->count();
+        if ($email_count > 0) {
+            return $this->showmessage('该邮件账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $data = array(
+            'mobile'   => $mobile_phone,
+            'name'     => $name,
+            'email'    => $email,
+            'password' => md5($login_password),
+            'add_time' => RC_Time::gmtime(),
+            'last_ip'  => RC_Ip::client_ip()
+        );
+
+        $id = RC_DB::table('staff_user')->insertGetId($data);
 
         return $this->showmessage('添加成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin/edit', array('id' => $id))));
     }
@@ -141,6 +191,14 @@ class admin extends ecjia_admin
         $this->assign('city', $city);
         $this->assign('district', $district);
 
+        $id   = intval($_GET['id']);
+        $data = $this->get_agent_info($id);
+        if (empty($data)) {
+            return ecjia_front::$controller->showmessage('该代理商不存在', ecjia::MSGTYPE_HTML | ecjia::MSGSTAT_ERROR);
+        }
+
+        $this->assign('data', $data);
+
         $this->display('agent_edit.dwt');
     }
 
@@ -148,7 +206,62 @@ class admin extends ecjia_admin
     {
         $this->admin_priv('agent_update', ecjia::MSGTYPE_JSON);
 
-        return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+        $id             = intval($_POST['id']);
+        $name           = trim($_POST['agent_name']);
+        $mobile_phone   = trim($_POST['mobile_phone']);
+        $email          = trim($_POST['email']);
+        $login_password = trim($_POST['login_password']);
+        $salt           = rand(1, 9999);
+
+        $data = $this->get_agent_info($id);
+        if (empty($data)) {
+            return ecjia_front::$controller->showmessage('该代理商不存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        if (empty($name)) {
+            return $this->showmessage('请输入代理商名称', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        if (empty($mobile_phone)) {
+            return $this->showmessage('请输入手机号码', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        if (empty($login_password)) {
+            return $this->showmessage('请输入登录密码', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $name_count = RC_DB::table('staff_user')->where('name', $name)->where('user_id', '!=', $id)->count();
+        if ($name_count > 0) {
+            return $this->showmessage('该代理商名称已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $check_mobile = Ecjia\App\Sms\Helper::check_mobile($mobile_phone);
+        if (is_ecjia_error($check_mobile)) {
+            return $this->showmessage($check_mobile->get_error_message(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $mobile_count = RC_DB::table('staff_user')->where('mobile', $mobile_phone)->where('user_id', '!=', $id)->count();
+        if ($mobile_count > 0) {
+            return $this->showmessage('该手机号码已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $email_count = RC_DB::table('staff_user')->where('email', $email)->where('user_id', '!=', $id)->count();
+        if ($email_count > 0) {
+            return $this->showmessage('该邮件账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $data = array(
+            'mobile'   => $mobile_phone,
+            'name'     => $name,
+            'email'    => $email,
+            'password' => md5($login_password),
+            'add_time' => RC_Time::gmtime(),
+            'last_ip'  => RC_Ip::client_ip()
+        );
+
+        RC_DB::table('staff_user')->where('user_id', $id)->update($data);
+
+        return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin/edit', array('id' => $id))));
     }
 
     public function detail()
@@ -166,8 +279,67 @@ class admin extends ecjia_admin
     public function delete()
     {
         $this->admin_priv('agent_delete', ecjia::MSGTYPE_JSON);
+
+        $id = intval($_POST['id']);
+
+//        RC_DB::table('staff_user')->where('user_id', $id)->delete();
+
+        return $this->showmessage('删除成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
     }
 
+    public function batch()
+    {
+        $this->admin_priv('agent_delete', ecjia::MSGTYPE_JSON);
+
+        $id = !empty($_POST['id']) ? explode(',', $_POST['id']) : '';
+        if (empty($id)) {
+            return $this->showmessage('请先选择要删除的代理商', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+//        RC_DB::table('staff_user')->whereIn('user_id', $id)->delete();
+
+        return $this->showmessage('删除成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+    }
+
+    private function get_agent_info($id)
+    {
+        $data = RC_DB::table('staff_user')->where('user_id', $id)->first();
+
+        return $data;
+    }
+
+    private function get_agent_list()
+    {
+        $keywords   = trim($_GET['keywords']);
+        $agent_rank = intval($_GET['agent_rank']);
+
+        $db_staff_user = RC_DB::table('staff_user');
+
+        if (!empty($keywords)) {
+            $db_staff_user->where('name', 'like', '%' . mysql_like_quote($keywords) . '%')
+                ->orWhere('mobile', 'like', '%' . mysql_like_quote($keywords) . '%');
+        }
+
+        if (!empty($agent_rank)) {
+
+        }
+
+        $count  = $db_staff_user->count();
+        $page   = new ecjia_page($count, 15, 5);
+        $result = $db_staff_user->take(15)->skip($page->start_id - 1)->get();
+
+        $data = [];
+        if (!empty($result)) {
+            foreach ($result as $val) {
+                if (!empty($val['add_time'])) {
+                    $val['add_time'] = RC_Time::local_date(ecjia::config('time_format'), $val['add_time']);
+                }
+                $data[] = $val;
+            }
+        }
+
+        return array('item' => $data, 'page' => $page->show(2), 'desc' => $page->page_desc());
+    }
 }
 
 // end
