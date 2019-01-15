@@ -22,7 +22,7 @@
         <form class="form-horizontal" action="{$form_action}" method="post" enctype="multipart/form-data" name="theForm">
             <div class="control-group formSep">
                 <label class="control-label">等级名称：</label>
-                <div class="controls l_h30">省级代理</div>
+                <div class="controls l_h30">{$data.rank_name}</div>
             </div>
 
             <div class="control-group formSep">
@@ -36,7 +36,7 @@
 
             <div class="control-group">
                 <div class="controls">
-                    <input type="hidden" name="id" value="" />
+                    <input type="hidden" name="id" value="{$id}" />
                     <button class="btn btn-gebo" type="submit">确定</button>
                 </div>
             </div>

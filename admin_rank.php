@@ -89,6 +89,13 @@ class admin_rank extends ecjia_admin
 
         $this->assign('ur_here', '代理等级');
 
+        $agent_rank = ecjia::config('agent_rank');
+        if (!empty($agent_rank)) {
+            $agent_rank = unserialize($agent_rank);
+
+            $this->assign('agent_rank', $agent_rank);
+        }
+
         $this->display('agent_rank_list.dwt');
     }
 
@@ -97,6 +104,24 @@ class admin_rank extends ecjia_admin
         $this->admin_priv('agent_rank_update');
 
         ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('编辑代理等级'));
+
+        $id = intval($_GET['id']);
+
+        $agent_rank = ecjia::config('agent_rank');
+
+        $data = [];
+        if (!empty($agent_rank)) {
+            $agent_rank = unserialize($agent_rank);
+
+            $data = $agent_rank[$id - 1];
+        }
+
+        if (empty($data)) {
+            return $this->showmessage('该代理等级不存在', ecjia::MSGTYPE_HTML | ecjia::MSGSTAT_ERROR);
+        }
+
+        $this->assign('data', $data);
+        $this->assign('id', $id);
 
         $this->assign('ur_here', '编辑代理等级');
         $this->assign('action_link', array('href' => RC_Uri::url('agent/admin_rank/init'), 'text' => '代理商列表'));
@@ -107,9 +132,29 @@ class admin_rank extends ecjia_admin
 
     public function update()
     {
+        $id                = intval($_POST['id']);
+        $affiliate_percent = is_numeric($_POST['affiliate_percent']) ? $_POST['affiliate_percent'] : 0;
+        $agent_rank        = ecjia::config('agent_rank');
+
+        if ($affiliate_percent >= 100) {
+            return $this->showmessage('分成比例不能大于或等于100%', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        if (!empty($agent_rank)) {
+            $agent_rank          = unserialize($agent_rank);
+            $agent_rank[$id - 1] = [
+                'rank_name'         => $agent_rank[$id - 1]['rank_name'],
+                'affiliate_percent' => $affiliate_percent
+            ];
+
+            $agent_rank = serialize($agent_rank);
+        }
+
+        ecjia_config::instance()->write_config('agent_rank', $agent_rank);
+
         $this->admin_priv('agent_rank_update', ecjia::MSGTYPE_JSON);
 
-        return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+        return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin_rank/edit', array('id' => $id))));
     }
 
     public function delete()
