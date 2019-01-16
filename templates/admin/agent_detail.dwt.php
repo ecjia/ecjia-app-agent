@@ -61,7 +61,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <div align="right"><strong>最后登录时间：</strong></div>
+                                <div align="right"><strong>最后登录：</strong></div>
                             </td>
                             <td colspan="3">{$data.formated_last_login}</td>
                         </tr>
@@ -73,14 +73,14 @@
         <div class="accordion-group">
             <div class="accordion-heading">
                 <div class="accordion-toggle acc-in" data-toggle="collapse" data-target="#detail_info_two">
-                    <strong>推广情况</strong>
+                    <strong>管辖情况</strong>
                 </div>
             </div>
             <div class="accordion-body in collapse" id="detail_info_two">
                 <div class="item-content">
-                    <div class="item">近日新增店铺：<span class="ecjiafc-FF0000">{$user.new_store}</span></div>
-                    <div class="item">等待审核店铺：<span class="ecjiafc-FF0000">{$user.uncheck_store}</span></div>
-                    <div class="item">累计推广店铺：<span class="ecjiafc-FF0000">{$data.spread_store}</span></div>
+                    <div class="item">今日新增店铺：<span class="ecjiafc-FF0000">{$count.new_store}</span></div>
+                    <div class="item">等待审核店铺：<span class="ecjiafc-FF0000">{$count.uncheck_store}</span></div>
+                    <div class="item">累计推广店铺：<span class="ecjiafc-FF0000">{$count.spread_store}</span></div>
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
         <div class="accordion-group">
             <div class="accordion-heading">
                 <div class="accordion-toggle acc-in" data-toggle="collapse" data-target="#detail_info_three">
-                    <strong>推广明细</strong>
+                    <strong>管辖店铺</strong>
                 </div>
             </div>
             <div class="accordion-body in collapse" id="detail_info_three">
@@ -100,18 +100,18 @@
                             <th>负责人</th>
                             <th>手机号码</th>
                             <th>申请时间</th>
-                            <th>结算状态</th>
+                            <th>状态</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- {foreach from=$list item=val} -->
+                        <!-- {foreach from=$list.item item=val} -->
                         <tr>
-                            <td>{$val.store_name}</td>
-                            <td>{$val.store_category}</td>
-                            <td>{$val.user_name}</td>
-                            <td>{$val.mobile_phone}</td>
+                            <td>{$val.merchants_name}</td>
+                            <td>{$val.category_name}</td>
+                            <td>{$val.responsible_person}</td>
+                            <td>{$val.contact_mobile}</td>
                             <td>{$val.formated_apply_time}</td>
-                            <td>{$val.label_status}</td>
+                            <td></td>
                         </tr>
                         <!-- {foreachelse} -->
                         <tr>
