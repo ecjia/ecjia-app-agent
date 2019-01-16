@@ -387,7 +387,13 @@ class admin extends ecjia_admin
         }
 
         if (!empty($agent_rank)) {
-            $db_staff_user->where(RC_DB::raw('a.agent_rank'), $agent_rank);
+            if ($agent_rank == 1) {
+                $db_staff_user->where(RC_DB::raw('a.rank_code'), 'province_agent');
+            } elseif ($agent_rank == 2) {
+                $db_staff_user->where(RC_DB::raw('a.rank_code'), 'city_agent');
+            } elseif ($agent_rank == 3) {
+                $db_staff_user->where(RC_DB::raw('a.rank_code'), 'district_agent');
+            }
         }
 
         $count  = $db_staff_user->count();

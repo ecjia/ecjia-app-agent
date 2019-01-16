@@ -35,9 +35,9 @@
     <div class="f_l">
         <select name="agent_rank" class="w150">
             <option value="0" {if $smarty.get.agent_rank eq ''} selected{/if}>代理等级</option>
-            <option value="1" {if $smarty.get.agent_rank eq '0'} selected{/if}>省级代理</option>
-            <option value="2" {if $smarty.get.agent_rank eq '1'} selected{/if}>市级代理</option>
-            <option value="3" {if $smarty.get.agent_rank eq '2'} selected{/if}>区级代理</option>
+            <option value="1" {if $smarty.get.agent_rank eq '1'} selected{/if}>省级代理</option>
+            <option value="2" {if $smarty.get.agent_rank eq '2'} selected{/if}>市级代理</option>
+            <option value="3" {if $smarty.get.agent_rank eq '3'} selected{/if}>区级代理</option>
         </select>
         <a class="btn m_l5 filter-btn" data-url="{RC_Uri::url('agent/admin/init')}">筛选</a>
     </div>
