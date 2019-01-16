@@ -23,6 +23,7 @@
 			<thead>
 				<tr>
                     <th>等级名称</th>
+                    <th>等级别名</th>
                     <th>分红比例</th>
                     <th class="w70">操作</th>
                 </tr>
@@ -31,6 +32,7 @@
                 <!-- {foreach from=$agent_rank item=val key=k} -->
                 <tr>
                     <td>{$val.rank_name}</td>
+                    <td>{$val.rank_alias}</td>
                     <td>{$val.affiliate_percent}</td>
                     <td>
                         <a class="data-pjax" href="{RC_Uri::url('agent/admin_rank/edit')}&id={$k+1}"><i class="fontello-icon-edit"></i></a>

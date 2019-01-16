@@ -134,7 +134,9 @@ class admin_rank extends ecjia_admin
     {
         $id                = intval($_POST['id']);
         $affiliate_percent = is_numeric($_POST['affiliate_percent']) ? $_POST['affiliate_percent'] : 0;
-        $agent_rank        = ecjia::config('agent_rank');
+        $rank_alias        = trim($_POST['rank_alias']);
+
+        $agent_rank = ecjia::config('agent_rank');
 
         if ($affiliate_percent >= 100) {
             return $this->showmessage('分成比例不能大于或等于100%', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
@@ -144,6 +146,7 @@ class admin_rank extends ecjia_admin
             $agent_rank          = unserialize($agent_rank);
             $agent_rank[$id - 1] = [
                 'rank_name'         => $agent_rank[$id - 1]['rank_name'],
+                'rank_alias'        => $rank_alias,
                 'affiliate_percent' => $affiliate_percent
             ];
 

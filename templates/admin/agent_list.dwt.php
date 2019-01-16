@@ -59,11 +59,9 @@
                     <th>姓名</th>
                     <th>手机号码</th>
                     <th>代理等级</th>
-                    <th>累计推广店铺</th>
-                    <th>累计入驻金</th>
-                    <th>累计推广店铺</th>
+                    <th>累计管辖店铺</th>
                     <th>管辖区域</th>
-                    <th>添加时间</th>
+                    <th class="w130">添加时间</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,13 +82,11 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
                     <td>{$val.add_time}</td>
                 </tr>
                 <!-- {foreachelse} -->
                 <tr>
-                    <td class="no-records" colspan="9">{lang key='system::system.no_records'}</td>
+                    <td class="no-records" colspan="7">{lang key='system::system.no_records'}</td>
                 </tr>
                 <!-- {/foreach} -->
             </tbody>

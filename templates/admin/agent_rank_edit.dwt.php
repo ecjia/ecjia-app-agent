@@ -26,6 +26,15 @@
             </div>
 
             <div class="control-group formSep">
+                <label class="control-label">等级别名：</label>
+                <div class="controls">
+                    <input class="span6" type="text" name="rank_alias" value="{$data.rank_alias}" />
+                    <span class="input-must">{lang key='system::system.require_field'}</span>
+                    <span class="help-block">您可将等级名称重新命名，未填写时直接显示本名，只影响到前台用户端的显示，不会对后台功能名称作影响</span>
+                </div>
+            </div>
+
+            <div class="control-group formSep">
                 <label class="control-label">分红比例：</label>
                 <div class="controls">
                     <input class="span6" type="text" name="affiliate_percent" value="{$data.affiliate_percent}" /> %
