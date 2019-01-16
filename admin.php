@@ -357,7 +357,8 @@ class admin extends ecjia_admin
             return $this->showmessage('请先选择要删除的代理商', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
-//        RC_DB::table('staff_user')->whereIn('user_id', $id)->delete();
+        RC_DB::table('staff_user')->whereIn('user_id', $id)->delete();
+        RC_DB::table('agent_user')->whereIn('user_id', $id)->delete();
 
         return $this->showmessage('删除成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
     }
@@ -453,7 +454,6 @@ class admin extends ecjia_admin
         if (!empty($count)) {
             return new ecjia_error('agent_error', $message);
         }
-
     }
 }
 
