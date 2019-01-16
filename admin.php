@@ -172,7 +172,7 @@ class admin extends ecjia_admin
         }
 
         $email_count = RC_DB::table('staff_user')->where('email', $email)->count();
-        if ($email_count > 0) {
+        if (!empty($email) && $email_count > 0) {
             return $this->showmessage('该邮件账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
@@ -290,11 +290,11 @@ class admin extends ecjia_admin
         }
 
         $email_count = RC_DB::table('staff_user')->where('email', $email)->where('user_id', '!=', $id)->count();
-        if ($email_count > 0) {
+        if (!empty($email) && $email_count > 0) {
             return $this->showmessage('该邮件账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
-        $check_rank = $this->check_rank_code($rank_code, $province, $city, $district);
+        $check_rank = $this->check_rank_code($rank_code, $province, $city, $district, $id);
         if (is_ecjia_error($check_rank)) {
             return $this->showmessage($check_rank->get_error_message(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
@@ -305,7 +305,6 @@ class admin extends ecjia_admin
             'email'    => $email,
             'password' => !empty($login_password) ? md5(md5($login_password) . $data['salt']) : $data['password'],
             'last_ip'  => RC_Ip::client_ip(),
-
         );
 
         RC_DB::table('staff_user')->where('user_id', $id)->update($data);
@@ -409,25 +408,45 @@ class admin extends ecjia_admin
         return array('item' => $data, 'page' => $page->show(2), 'desc' => $page->page_desc());
     }
 
-    private function check_rank_code($rank_code = '', $province = '', $city = '', $district = '')
+    private function check_rank_code($rank_code = '', $province = '', $city = '', $district = '', $user_id = 0)
     {
         if (empty($rank_code)) {
             return new ecjia_error('rank_code_required', '请选择代理等级');
+        }
+
+        $db_agent_user = RC_DB::table('agent_user');
+
+        if (!empty($user_id)) {
+            $db_agent_user->where('user_id', '!=', $user_id);
         }
 
         if ($rank_code == 'province_agent') {
             if (empty($province)) {
                 return new ecjia_error('province_required', '请选择省份');
             }
-        } else if ($rank_code == 'city_agent') {
+            $db_agent_user->where('province', $province);
+            $message = '该省份已存在一个代理商';
+
+        } elseif ($rank_code == 'city_agent') {
             if (empty($city)) {
                 return new ecjia_error('city_required', '请选择城市');
             }
-        } else if ($rank_code == 'district_agent') {
+            $db_agent_user->where('city', $city);
+            $message = '该城市已存在一个代理商';
+
+        } elseif ($rank_code == 'district_agent') {
             if (empty($district)) {
                 return new ecjia_error('district_required', '请选择地区');
             }
+            $db_agent_user->where('district', $district);
+            $message = '该地区已存在一个代理商';
         }
+
+        $count = $db_agent_user->count();
+        if (!empty($count)) {
+            return new ecjia_error('agent_error', $message);
+        }
+
     }
 }
 
