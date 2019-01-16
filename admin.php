@@ -56,6 +56,8 @@ class admin extends ecjia_admin
     {
         parent::__construct();
 
+        RC_Loader::load_app_class('AgentRankList', 'agent', false);
+
         /* 加载全局 js/css */
         RC_Script::enqueue_script('jquery-validate');
         RC_Script::enqueue_script('jquery-form');
@@ -74,6 +76,7 @@ class admin extends ecjia_admin
 
         RC_Script::enqueue_script('bootstrap-placeholder', RC_Uri::admin_url('statics/lib/dropper-upload/bootstrap-placeholder.js'), array(), false, true);
 
+        RC_Script::enqueue_script('region', RC_Uri::admin_url('statics/lib/ecjia-js/ecjia.region.js'));
         RC_Script::enqueue_script('agent', RC_App::apps_url('statics/js/agent.js', __FILE__));
         RC_Style::enqueue_style('agent', RC_App::apps_url('statics/css/agent.css', __FILE__));
 
@@ -114,6 +117,16 @@ class admin extends ecjia_admin
         $this->assign('city', $city);
         $this->assign('district', $district);
 
+        $agent_rank_list = ecjia::config('agent_rank');
+        if (empty($agent_rank_list)) {
+            $agent_rank_list = AgentRankList::get_rank_list();
+
+            ecjia_config::instance()->write_config('agent_rank', serialize($agent_rank_list));
+        } else {
+            $agent_rank_list = unserialize($agent_rank_list);
+        }
+        $this->assign('rank_list', $agent_rank_list);
+
         $this->display('agent_edit.dwt');
     }
 
@@ -126,6 +139,10 @@ class admin extends ecjia_admin
         $email          = trim($_POST['email']);
         $login_password = trim($_POST['login_password']);
         $salt           = rand(1, 9999);
+        $rank_code      = trim($_POST['agent_rank']);
+        $province       = trim($_POST['province']);
+        $city           = trim($_POST['city']);
+        $district       = trim($_POST['district']);
 
         if (empty($name)) {
             return $this->showmessage('请输入代理商名称', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
@@ -159,16 +176,40 @@ class admin extends ecjia_admin
             return $this->showmessage('该邮件账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
+
+        $check_rank = $this->check_rank_code($rank_code, $province, $city, $district);
+        if (is_ecjia_error($check_rank)) {
+            return $this->showmessage($check_rank->get_error_message(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
         $data = array(
-            'mobile'   => $mobile_phone,
-            'name'     => $name,
-            'email'    => $email,
-            'password' => md5($login_password),
-            'add_time' => RC_Time::gmtime(),
-            'last_ip'  => RC_Ip::client_ip()
+            'mobile'       => $mobile_phone,
+            'name'         => $name,
+            'email'        => $email,
+            'password'     => md5(md5($login_password) . $salt),
+            'salt'         => $salt,
+            'add_time'     => RC_Time::gmtime(),
+            'last_ip'      => RC_Ip::client_ip(),
+            'group_id'     => Ecjia\App\Staff\StaffGroupConstant::GROUP_AGENT,
+            'introduction' => '代理商'
         );
 
         $id = RC_DB::table('staff_user')->insertGetId($data);
+
+        if (empty($id)) {
+            return $this->showmessage('添加失败', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
+        $insert_data = array('user_id' => $id, 'rank_code' => $rank_code);
+
+        $insert_data['province'] = $province;
+        if ($rank_code == 'city_agent') {
+            $insert_data['city'] = $city;
+        } elseif ($rank_code == 'district_agent') {
+            $insert_data['city']     = $city;
+            $insert_data['district'] = $district;
+        }
+        RC_DB::table('agent_user')->insert($insert_data);
 
         return $this->showmessage('添加成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin/edit', array('id' => $id))));
     }
@@ -183,21 +224,25 @@ class admin extends ecjia_admin
         $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/init'), 'text' => '代理商列表'));
         $this->assign('form_action', RC_Uri::url('agent/admin/update'));
 
-        $province = ecjia_region::getSubarea(ecjia::config('shop_country'));
-        $city     = ecjia_region::getSubarea();
-        $district = ecjia_region::getSubarea();
-
-        $this->assign('province', $province);
-        $this->assign('city', $city);
-        $this->assign('district', $district);
-
         $id   = intval($_GET['id']);
         $data = $this->get_agent_info($id);
         if (empty($data)) {
             return ecjia_front::$controller->showmessage('该代理商不存在', ecjia::MSGTYPE_HTML | ecjia::MSGSTAT_ERROR);
         }
-
         $this->assign('data', $data);
+
+        $province = ecjia_region::getSubarea(ecjia::config('shop_country'));
+        $city     = ecjia_region::getSubarea($data['province']);
+        $district = ecjia_region::getSubarea($data['city']);
+
+        $this->assign('province', $province);
+        $this->assign('city', $city);
+        $this->assign('district', $district);
+
+        $agent_rank_list = ecjia::config('agent_rank');
+        $agent_rank_list = unserialize($agent_rank_list);
+
+        $this->assign('rank_list', $agent_rank_list);
 
         $this->display('agent_edit.dwt');
     }
@@ -210,8 +255,11 @@ class admin extends ecjia_admin
         $name           = trim($_POST['agent_name']);
         $mobile_phone   = trim($_POST['mobile_phone']);
         $email          = trim($_POST['email']);
-        $login_password = trim($_POST['login_password']);
-        $salt           = rand(1, 9999);
+        $login_password = trim($_POST['new_password']);
+        $rank_code      = trim($_POST['agent_rank']);
+        $province       = trim($_POST['province']);
+        $city           = trim($_POST['city']);
+        $district       = trim($_POST['district']);
 
         $data = $this->get_agent_info($id);
         if (empty($data)) {
@@ -224,10 +272,6 @@ class admin extends ecjia_admin
 
         if (empty($mobile_phone)) {
             return $this->showmessage('请输入手机号码', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
-        }
-
-        if (empty($login_password)) {
-            return $this->showmessage('请输入登录密码', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
         $name_count = RC_DB::table('staff_user')->where('name', $name)->where('user_id', '!=', $id)->count();
@@ -250,16 +294,33 @@ class admin extends ecjia_admin
             return $this->showmessage('该邮件账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
+        $check_rank = $this->check_rank_code($rank_code, $province, $city, $district);
+        if (is_ecjia_error($check_rank)) {
+            return $this->showmessage($check_rank->get_error_message(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
+
         $data = array(
             'mobile'   => $mobile_phone,
             'name'     => $name,
             'email'    => $email,
-            'password' => md5($login_password),
-            'add_time' => RC_Time::gmtime(),
-            'last_ip'  => RC_Ip::client_ip()
+            'password' => !empty($login_password) ? md5(md5($login_password) . $data['salt']) : $data['password'],
+            'last_ip'  => RC_Ip::client_ip(),
+
         );
 
         RC_DB::table('staff_user')->where('user_id', $id)->update($data);
+
+        $update_data = array('user_id' => $id, 'rank_code' => $rank_code);
+
+        $update_data['province'] = $province;
+        if ($rank_code == 'city_agent') {
+            $update_data['city'] = $city;
+        } elseif ($rank_code == 'district_agent') {
+            $update_data['city']     = $city;
+            $update_data['district'] = $district;
+        }
+        RC_DB::table('agent_user')->where('user_id', $id)->update($update_data);
+
 
         return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin/edit', array('id' => $id))));
     }
@@ -280,9 +341,10 @@ class admin extends ecjia_admin
     {
         $this->admin_priv('agent_delete', ecjia::MSGTYPE_JSON);
 
-        $id = intval($_POST['id']);
+        $id = intval($_GET['id']);
 
-//        RC_DB::table('staff_user')->where('user_id', $id)->delete();
+        RC_DB::table('staff_user')->where('user_id', $id)->delete();
+        RC_DB::table('agent_user')->where('user_id', $id)->delete();
 
         return $this->showmessage('删除成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
     }
@@ -303,7 +365,10 @@ class admin extends ecjia_admin
 
     private function get_agent_info($id)
     {
-        $data = RC_DB::table('staff_user')->where('user_id', $id)->first();
+        $data = RC_DB::table('staff_user as s')
+            ->leftJoin('agent_user as a', RC_DB::raw('s.user_id'), '=', RC_DB::raw('a.user_id'))
+            ->where(RC_DB::raw('s.user_id'), $id)
+            ->first();
 
         return $data;
     }
@@ -313,15 +378,17 @@ class admin extends ecjia_admin
         $keywords   = trim($_GET['keywords']);
         $agent_rank = intval($_GET['agent_rank']);
 
-        $db_staff_user = RC_DB::table('staff_user');
+        $db_staff_user = RC_DB::table('staff_user as s')
+            ->leftJoin('agent_user as a', RC_DB::raw('s.user_id'), '=', RC_DB::raw('a.user_id'))
+            ->where(RC_DB::raw('s.group_id'), Ecjia\App\Staff\StaffGroupConstant::GROUP_AGENT);
 
         if (!empty($keywords)) {
-            $db_staff_user->where('name', 'like', '%' . mysql_like_quote($keywords) . '%')
-                ->orWhere('mobile', 'like', '%' . mysql_like_quote($keywords) . '%');
+            $db_staff_user->where(RC_DB::raw('s.name'), 'like', '%' . mysql_like_quote($keywords) . '%')
+                ->orWhere(RC_DB::raw('s.mobile'), 'like', '%' . mysql_like_quote($keywords) . '%');
         }
 
         if (!empty($agent_rank)) {
-
+            $db_staff_user->where(RC_DB::raw('a.agent_rank'), $agent_rank);
         }
 
         $count  = $db_staff_user->count();
@@ -332,13 +399,35 @@ class admin extends ecjia_admin
         if (!empty($result)) {
             foreach ($result as $val) {
                 if (!empty($val['add_time'])) {
-                    $val['add_time'] = RC_Time::local_date(ecjia::config('time_format'), $val['add_time']);
+                    $val['add_time']    = RC_Time::local_date(ecjia::config('time_format'), $val['add_time']);
+                    $val['area_region'] = ecjia_region::getRegionName($val['province']) . ' ' . ecjia_region::getRegionName($val['city']) . ' ' . ecjia_region::getRegionName($val['district']);
                 }
                 $data[] = $val;
             }
         }
 
         return array('item' => $data, 'page' => $page->show(2), 'desc' => $page->page_desc());
+    }
+
+    private function check_rank_code($rank_code = '', $province = '', $city = '', $district = '')
+    {
+        if (empty($rank_code)) {
+            return new ecjia_error('rank_code_required', '请选择代理等级');
+        }
+
+        if ($rank_code == 'province_agent') {
+            if (empty($province)) {
+                return new ecjia_error('province_required', '请选择省份');
+            }
+        } else if ($rank_code == 'city_agent') {
+            if (empty($city)) {
+                return new ecjia_error('city_required', '请选择城市');
+            }
+        } else if ($rank_code == 'district_agent') {
+            if (empty($district)) {
+                return new ecjia_error('district_required', '请选择地区');
+            }
+        }
     }
 }
 

@@ -5,6 +5,7 @@
             app.agent.search();
             app.agent.submit_form();
             app.agent.stop_propagation();//阻止冒泡事件
+            app.agent.check_agent_rank();
         },
 
         search: function () {
@@ -68,7 +69,14 @@
             $('.stop_propagation').off('click').on('click', function (e) {
                 e.stopPropagation();
             })
-        }
+        },
+
+        check_agent_rank: function () {
+            $('input[name="agent_rank"]').off('click').on('click', function () {
+                var $this = $(this),
+                    val = $this.val();
+            });
+        },
     };
 })(ecjia.admin, jQuery);
 

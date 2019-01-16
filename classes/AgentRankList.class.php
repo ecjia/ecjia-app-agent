@@ -44,21 +44,36 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-namespace Ecjia\App\Agent;
+defined('IN_ECJIA') or exit('No permission resources.');
 
-use Royalcms\Component\App\AppParentServiceProvider;
-
-class AgentServiceProvider extends AppParentServiceProvider
+/**
+ * 代理商等级列表
+ *
+ */
+class AgentRankList
 {
-
-    public function boot()
+    public static function get_rank_list()
     {
-        $this->package('ecjia/app-agent');
+        $data = array(
+            array(
+                'rank_name'         => '省级代理',
+                'rank_code'         => 'province_agent',
+                'rank_alias'        => '一级代理',
+                'affiliate_percent' => 15
+            ),
+            array(
+                'rank_name'         => '市级代理',
+                'rank_code'         => 'city_agent',
+                'rank_alias'        => '二级代理',
+                'affiliate_percent' => 10
+            ),
+            array(
+                'rank_name'         => '区级代理',
+                'rank_code'         => 'district_agent',
+                'rank_alias'        => '三级代理',
+                'affiliate_percent' => 5
+            )
+        );
+        return $data;
     }
-
-    public function register()
-    {
-
-    }
-
 }

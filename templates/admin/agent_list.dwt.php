@@ -81,7 +81,7 @@
                     <td>{$val.mobile}</td>
                     <td></td>
                     <td></td>
-                    <td></td>
+                    <td>{$val.area_region}</td>
                     <td>{$val.add_time}</td>
                 </tr>
                 <!-- {foreachelse} -->

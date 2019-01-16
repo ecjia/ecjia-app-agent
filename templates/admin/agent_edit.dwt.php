@@ -43,33 +43,53 @@
                 </div>
             </div>
 
+            {if !$data.user_id}
             <div class="control-group formSep">
-                <label class="control-label">{if $data}新密码：{else}登录密码：{/if}</label>
+                <label class="control-label">登录密码：</label>
                 <div class="controls">
                     <input class="span6" type="text" name="login_password" autocomplete="off" />
                     <span class="input-must">{lang key='system::system.require_field'}</span>
                 </div>
             </div>
+            {else}
+            <div class="control-group formSep">
+                <label class="control-label">新密码：</label>
+                <div class="controls">
+                    <input class="span6" type="text" name="new_password" autocomplete="off" />
+                </div>
+            </div>
+            {/if}
+
+            {if $rank_list}
+            <div class="control-group formSep">
+                <label class="control-label">代理等级：</label>
+                <div class="controls">
+                    {foreach from=$rank_list item=val}
+                    <input type="radio" name="agent_rank" value="{$val.rank_code}" {if $data.rank_code eq $val.rank_code}checked{/if} /><span>{$val.rank_name}</span>
+                    {/foreach}
+                </div>
+            </div>
+            {/if}
 
             <div class="control-group formSep">
                 <label class="control-label">管辖地区：</label>
                 <div class="controls choose_list">
-                    <select class="region-summary-provinces span2" name="area_province" id="selProvinces" data-url="{url path='setting/region/init'}" data-toggle="regionSummary" data-type="2" data-target="region-summary-cities">
+                    <select class="region-summary-provinces span2" name="province" id="selProvinces" data-url="{url path='setting/region/init'}" data-toggle="regionSummary" data-type="2" data-target="region-summary-cities">
                         <option value='0'>{lang key='system::system.select_please'}</option>
                         <!-- {foreach from=$province item=region} -->
-                        <option value="{$region.region_id}" {if $region.region_id eq $data.area_province}selected{/if}>{$region.region_name}</option>
+                        <option value="{$region.region_id}" {if $region.region_id eq $data.province}selected{/if}>{$region.region_name}</option>
                         <!-- {/foreach} -->
                     </select>
-                    <select class="region-summary-cities span2" name="area_city" id="selCities" data-toggle="regionSummary" data-type="3" data-target="region-summary-district">
+                    <select class="region-summary-cities span2" name="city" id="selCities" data-toggle="regionSummary" data-type="3" data-target="region-summary-district">
                         <option value='0'>{lang key='system::system.select_please'}</option>
                         <!-- {foreach from=$city item=region} -->
-                        <option value="{$region.region_id}" {if $region.region_id eq $data.area_city}selected{/if}>{$region.region_name}</option>
+                        <option value="{$region.region_id}" {if $region.region_id eq $data.city}selected{/if}>{$region.region_name}</option>
                         <!-- {/foreach} -->
                     </select>
-                    <select class="region-summary-district span2" name="area_district" id="seldistrict">
+                    <select class="region-summary-district span2" name="district" id="seldistrict">
                         <option value='0'>{lang key='system::system.select_please'}</option>
                         <!-- {foreach from=$district item=region} -->
-                        <option value="{$region.region_id}" {if $region.region_id eq $data.area_district}selected{/if}>{$region.region_name}</option>
+                        <option value="{$region.region_id}" {if $region.region_id eq $data.district}selected{/if}>{$region.region_name}</option>
                         <!-- {/foreach} -->
                     </select>
                 </div>
