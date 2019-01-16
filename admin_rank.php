@@ -56,6 +56,8 @@ class admin_rank extends ecjia_admin
     {
         parent::__construct();
 
+        RC_Loader::load_app_class('AgentRankList', 'agent', false);
+
         /* 加载全局 js/css */
         RC_Script::enqueue_script('jquery-validate');
         RC_Script::enqueue_script('jquery-form');
@@ -90,11 +92,15 @@ class admin_rank extends ecjia_admin
         $this->assign('ur_here', '代理等级');
 
         $agent_rank = ecjia::config('agent_rank');
-        if (!empty($agent_rank)) {
-            $agent_rank = unserialize($agent_rank);
+        if (empty($agent_rank)) {
+            $agent_rank = AgentRankList::get_rank_list();
 
-            $this->assign('agent_rank', $agent_rank);
+            ecjia_config::instance()->write_config('agent_rank', serialize($agent_rank));
+        } else {
+            $agent_rank = unserialize($agent_rank);
         }
+
+        $this->assign('agent_rank', $agent_rank);
 
         $this->display('agent_rank_list.dwt');
     }
