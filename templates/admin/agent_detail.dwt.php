@@ -23,7 +23,7 @@
             <div class="accordion-heading">
                 <div class="accordion-toggle acc-in" data-toggle="collapse" data-target="#detail_info_one">
                     <strong>基本信息</strong>
-                    <a class="m_l5 stop_propagation" target="_blank" href='{url path="agent/admin/edit" args="id={$data.id}"}'>编辑</a>
+                    <a class="m_l5 stop_propagation" target="_blank" href='{url path="agent/admin/edit" args="id={$data.user_id}"}'>编辑</a>
                 </div>
             </div>
             <div class="accordion-body in collapse" id="detail_info_one">
@@ -33,11 +33,11 @@
                             <td>
                                 <div align="right"><strong>代理商名称：</strong></div>
                             </td>
-                            <td>{$data.agent_name}</td>
+                            <td>{$data.name}</td>
                             <td>
                                 <div align="right"><strong>手机号码：</strong></div>
                             </td>
-                            <td>{$data.mobile_phone}</td>
+                            <td>{$data.mobile}</td>
                         </tr>
                         <tr>
                             <td>
@@ -57,13 +57,13 @@
                             <td>
                                 <div align="right"><strong>添加时间：</strong></div>
                             </td>
-                            <td>{$data.add_time}</td>
+                            <td>{$data.formated_add_time}</td>
                         </tr>
                         <tr>
                             <td>
                                 <div align="right"><strong>最后登录时间：</strong></div>
                             </td>
-                            <td colspan="3">{$data.last_login_time}</td>
+                            <td colspan="3">{$data.formated_last_login}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -78,9 +78,9 @@
             </div>
             <div class="accordion-body in collapse" id="detail_info_two">
                 <div class="item-content">
+                    <div class="item">近日新增店铺：<span class="ecjiafc-FF0000">{$user.new_store}</span></div>
+                    <div class="item">等待审核店铺：<span class="ecjiafc-FF0000">{$user.uncheck_store}</span></div>
                     <div class="item">累计推广店铺：<span class="ecjiafc-FF0000">{$data.spread_store}</span></div>
-                    <div class="item">累计入驻金：<span class="ecjiafc-FF0000">{$user.formated_franchisee_money}</span></div>
-                    <div class="item">累计推广金额：<span class="ecjiafc-FF0000">{$user.formated_spread_money}</span></div>
                 </div>
             </div>
         </div>
@@ -99,9 +99,6 @@
                             <th>商家分类</th>
                             <th>负责人</th>
                             <th>手机号码</th>
-                            <th>缴纳入驻金</th>
-                            <th>推广比例</th>
-                            <th>推广金额</th>
                             <th>申请时间</th>
                             <th>结算状态</th>
                         </tr>
@@ -113,15 +110,12 @@
                             <td>{$val.store_category}</td>
                             <td>{$val.user_name}</td>
                             <td>{$val.mobile_phone}</td>
-                            <td>{$val.franchisee_money}</td>
-                            <td>{$val.spread_percent}</td>
-                            <td>{$val.spread_money}</td>
-                            <td>{$val.apply_time}</td>
+                            <td>{$val.formated_apply_time}</td>
                             <td>{$val.label_status}</td>
                         </tr>
                         <!-- {foreachelse} -->
                         <tr>
-                            <td class="no-records" colspan="9">{lang key='system::system.no_records'}</td>
+                            <td class="no-records" colspan="6">{lang key='system::system.no_records'}</td>
                         </tr>
                         <!-- {/foreach} -->
                     </tbody>

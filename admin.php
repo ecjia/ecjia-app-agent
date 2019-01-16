@@ -333,6 +333,13 @@ class admin extends ecjia_admin
         $this->assign('ur_here', '代理商详情');
         $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/init'), 'text' => '代理商列表'));
 
+        $id   = intval($_GET['id']);
+        $data = $this->get_agent_info($id);
+        if (empty($data)) {
+            return ecjia_front::$controller->showmessage('该代理商不存在', ecjia::MSGTYPE_HTML | ecjia::MSGSTAT_ERROR);
+        }
+        $this->assign('data', $data);
+
         $this->display('agent_detail.dwt');
     }
 
@@ -370,6 +377,10 @@ class admin extends ecjia_admin
             ->where(RC_DB::raw('s.user_id'), $id)
             ->first();
 
+        if (!empty($data)) {
+            $data['formated_add_time']   = !empty($data['add_time']) ? RC_Time::local_date(ecjia::config('time_format'), $data['add_time']) : '';
+            $data['formated_last_login'] = !empty($data['last_login']) ? RC_Time::local_date(ecjia::config('time_format'), $data['last_login']) : '';
+        }
         return $data;
     }
 
