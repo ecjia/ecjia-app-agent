@@ -493,15 +493,15 @@ class admin extends ecjia_admin
 
         if ($data['rank_code'] == 'province_agent') {
             $count['new_store']     = RC_DB::table('store_franchisee')->where('confirm_time', '>=', $today_start_date)->where('province', $data['province'])->count();
-            $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('province', $data['province'])->count();
+            $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('check_status', 1)->where('province', $data['province'])->count();
             $count['check_store']   = RC_DB::table('store_franchisee')->where('province', $data['province'])->count();
         } elseif ($data['rank_code'] == 'city_agent') {
             $count['new_store']     = RC_DB::table('store_franchisee')->where('confirm_time', '>=', $today_start_date)->where('city', $data['city'])->count();
-            $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('city', $data['city'])->count();
+            $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('check_status', 1)->where('city', $data['city'])->count();
             $count['check_store']   = RC_DB::table('store_franchisee')->where('city', $data['city'])->count();
         } elseif ($data['rank_code'] == 'district_agent') {
             $count['new_store']     = RC_DB::table('store_franchisee')->where('confirm_time', '>=', $today_start_date)->where('district', $data['district'])->count();
-            $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('district', $data['district'])->count();
+            $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('check_status', 1)->where('district', $data['district'])->count();
             $count['check_store']   = RC_DB::table('store_franchisee')->where('district', $data['district'])->count();
         }
         $count['spread_store'] = $count['check_store'] + $count['uncheck_store'];
@@ -531,6 +531,7 @@ class admin extends ecjia_admin
                     $val['formated_apply_time'] = RC_Time::local_date(ecjia::config('time_format'), $val['apply_time']);
                 }
                 $val['category_name'] = RC_DB::table('merchants_category')->where('cat_id', $val['cat_id'])->pluck('cat_name');
+                
                 $data[] = $val;
             }
         }
