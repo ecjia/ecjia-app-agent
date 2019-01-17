@@ -57,6 +57,7 @@ class admin extends ecjia_admin
         parent::__construct();
 
         RC_Loader::load_app_class('AgentRankList', 'agent', false);
+        RC_Loader::load_app_class('Agent', 'agent', false);
 
         /* 加载全局 js/css */
         RC_Script::enqueue_script('jquery-validate');
@@ -225,7 +226,7 @@ class admin extends ecjia_admin
         $this->assign('form_action', RC_Uri::url('agent/admin/update'));
 
         $id   = intval($_GET['id']);
-        $data = $this->get_agent_info($id);
+        $data = Agent::get_agent_info($id);
         if (empty($data)) {
             return ecjia_front::$controller->showmessage('该代理商不存在', ecjia::MSGTYPE_HTML | ecjia::MSGSTAT_ERROR);
         }
@@ -261,7 +262,7 @@ class admin extends ecjia_admin
         $city           = trim($_POST['city']);
         $district       = trim($_POST['district']);
 
-        $data = $this->get_agent_info($id);
+        $data = Agent::get_agent_info($id);
         if (empty($data)) {
             return ecjia_front::$controller->showmessage('该代理商不存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
@@ -336,18 +337,18 @@ class admin extends ecjia_admin
         $this->assign('action_link', array('href' => RC_Uri::url('agent/admin/init'), 'text' => '代理商列表'));
 
         $id   = intval($_GET['id']);
-        $data = $this->get_agent_info($id);
+        $data = Agent::get_agent_info($id);
         if (empty($data)) {
             return ecjia_front::$controller->showmessage('该代理商不存在', ecjia::MSGTYPE_HTML | ecjia::MSGSTAT_ERROR);
         }
 
-        $rank_info          = $this->get_agent_rank($data['rank_code']);
+        $rank_info          = Agent::get_agent_rank($data['rank_code']);
         $data['rank_name']  = $rank_info['rank_name'];
         $data['rank_alias'] = $rank_info['rank_alias'];
 
         $this->assign('data', $data);
 
-        $count = $this->get_count_info($id);
+        $count = Agent::get_count_info($id);
         $this->assign('count', $count);
 
         $store_list = $this->get_store_list($id);
@@ -381,21 +382,6 @@ class admin extends ecjia_admin
         RC_DB::table('agent_user')->whereIn('user_id', $id)->delete();
 
         return $this->showmessage('删除成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
-    }
-
-    private function get_agent_info($id)
-    {
-        $data = RC_DB::table('staff_user as s')
-            ->leftJoin('agent_user as a', RC_DB::raw('s.user_id'), '=', RC_DB::raw('a.user_id'))
-            ->where(RC_DB::raw('s.user_id'), $id)
-            ->first();
-
-        if (!empty($data)) {
-            $data['formated_add_time']   = !empty($data['add_time']) ? RC_Time::local_date(ecjia::config('time_format'), $data['add_time']) : '';
-            $data['formated_last_login'] = !empty($data['last_login']) ? RC_Time::local_date(ecjia::config('time_format'), $data['last_login']) : '';
-            $data['area_region']         = ecjia_region::getRegionName($data['province']) . ' ' . ecjia_region::getRegionName($data['city']) . ' ' . ecjia_region::getRegionName($data['district']);
-        }
-        return $data;
     }
 
     private function get_agent_list()
@@ -434,7 +420,7 @@ class admin extends ecjia_admin
                 if (!empty($val['add_time'])) {
                     $val['add_time']    = RC_Time::local_date(ecjia::config('time_format'), $val['add_time']);
                     $val['area_region'] = ecjia_region::getRegionName($val['province']) . ' ' . ecjia_region::getRegionName($val['city']) . ' ' . ecjia_region::getRegionName($val['district']);
-                    $rank_info          = $this->get_agent_rank($val['rank_code']);
+                    $rank_info          = Agent::get_agent_rank($val['rank_code']);
                     $val['rank_name']   = $rank_info['rank_name'];
 
                     if ($val['rank_code'] == 'province_agent') {
@@ -492,46 +478,9 @@ class admin extends ecjia_admin
         }
     }
 
-    private function get_count_info($id)
-    {
-        $m = RC_Time::local_date('m');
-        $d = RC_Time::local_date('d');
-        $y = RC_Time::local_date('y');
-
-        $today_start_date = RC_Time::local_mktime(0, 0, 0, $m, $d, $y);
-
-        $data  = $this->get_agent_info($id);
-        $count = [
-            'new_store'     => 0,
-            'uncheck_store' => 0,
-            'spread_store'  => 0
-        ];
-
-        if ($data['rank_code'] == 'province_agent') {
-            $count['new_store']     = RC_DB::table('store_franchisee')->where('confirm_time', '>=', $today_start_date)->where('province', $data['province'])->count();
-            $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('check_status', 1)->where('province', $data['province'])->count();
-
-            $count['spread_store'] = RC_DB::table('store_franchisee')->where('province', $data['province'])->count();
-
-        } elseif ($data['rank_code'] == 'city_agent') {
-            $count['new_store']     = RC_DB::table('store_franchisee')->where('confirm_time', '>=', $today_start_date)->where('city', $data['city'])->count();
-            $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('check_status', 1)->where('city', $data['city'])->count();
-
-            $count['spread_store'] = RC_DB::table('store_franchisee')->where('city', $data['city'])->count();
-
-        } elseif ($data['rank_code'] == 'district_agent') {
-            $count['new_store']     = RC_DB::table('store_franchisee')->where('confirm_time', '>=', $today_start_date)->where('district', $data['district'])->count();
-            $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('check_status', 1)->where('district', $data['district'])->count();
-
-            $count['spread_store'] = RC_DB::table('store_franchisee')->where('district', $data['district'])->count();
-        }
-
-        return $count;
-    }
-
     private function get_store_list($id)
     {
-        $data = $this->get_agent_info($id);
+        $data = Agent::get_agent_info($id);
 
         $db = RC_DB::table('store_franchisee');
         if ($data['rank_code'] == 'province_agent') {
@@ -559,17 +508,6 @@ class admin extends ecjia_admin
         return array('item' => $data, 'page' => $page->show(2), 'desc' => $page->page_desc());
     }
 
-    private function get_agent_rank($rank_code = '')
-    {
-        $agent_rank = AgentRankList::get_rank_list();
-        if (!empty($agent_rank)) {
-            foreach ($agent_rank as $k => $v) {
-                if ($rank_code == $v['rank_code']) {
-                    return array('rank_name' => $v['rank_name'], 'rank_alias' => $v['rank_alias']);
-                }
-            }
-        }
-    }
 }
 
 // end
