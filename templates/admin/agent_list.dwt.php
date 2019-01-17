@@ -79,8 +79,8 @@
                         </div>
                     </td>
                     <td>{$val.mobile}</td>
-                    <td></td>
-                    <td></td>
+                    <td>{$val.rank_name}</td>
+                    <td>{$val.store_count}</td>
                     <td>{$val.area_region}</td>
                     <td>{$val.add_time}</td>
                 </tr>

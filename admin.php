@@ -429,6 +429,15 @@ class admin extends ecjia_admin
                 if (!empty($val['add_time'])) {
                     $val['add_time']    = RC_Time::local_date(ecjia::config('time_format'), $val['add_time']);
                     $val['area_region'] = ecjia_region::getRegionName($val['province']) . ' ' . ecjia_region::getRegionName($val['city']) . ' ' . ecjia_region::getRegionName($val['district']);
+                    $val['rank_name']   = $this->get_agent_rank($val['rank_code']);
+
+                    if ($val['rank_code'] == 'province_agent') {
+                        $val['store_count'] = RC_DB::table('store_franchisee')->where('province', $val['province'])->count();
+                    } elseif ($val['rank_code'] == 'city_agent') {
+                        $val['store_count'] = RC_DB::table('store_franchisee')->where('city', $val['city'])->count();
+                    } elseif ($val['rank_code'] == 'district_agent') {
+                        $val['store_count'] = RC_DB::table('store_franchisee')->where('district', $val['district'])->count();
+                    }
                 }
                 $data[] = $val;
             }
@@ -495,17 +504,21 @@ class admin extends ecjia_admin
         if ($data['rank_code'] == 'province_agent') {
             $count['new_store']     = RC_DB::table('store_franchisee')->where('confirm_time', '>=', $today_start_date)->where('province', $data['province'])->count();
             $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('check_status', 1)->where('province', $data['province'])->count();
-            $count['check_store']   = RC_DB::table('store_franchisee')->where('province', $data['province'])->count();
+
+            $count['spread_store'] = RC_DB::table('store_franchisee')->where('province', $data['province'])->count();
+
         } elseif ($data['rank_code'] == 'city_agent') {
             $count['new_store']     = RC_DB::table('store_franchisee')->where('confirm_time', '>=', $today_start_date)->where('city', $data['city'])->count();
             $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('check_status', 1)->where('city', $data['city'])->count();
-            $count['check_store']   = RC_DB::table('store_franchisee')->where('city', $data['city'])->count();
+
+            $count['spread_store'] = RC_DB::table('store_franchisee')->where('city', $data['city'])->count();
+
         } elseif ($data['rank_code'] == 'district_agent') {
             $count['new_store']     = RC_DB::table('store_franchisee')->where('confirm_time', '>=', $today_start_date)->where('district', $data['district'])->count();
             $count['uncheck_store'] = RC_DB::table('store_preaudit')->where('check_status', 1)->where('district', $data['district'])->count();
-            $count['check_store']   = RC_DB::table('store_franchisee')->where('district', $data['district'])->count();
+
+            $count['spread_store'] = RC_DB::table('store_franchisee')->where('district', $data['district'])->count();
         }
-        $count['spread_store'] = $count['check_store'] + $count['uncheck_store'];
 
         return $count;
     }
@@ -538,8 +551,18 @@ class admin extends ecjia_admin
         }
 
         return array('item' => $data, 'page' => $page->show(2), 'desc' => $page->page_desc());
+    }
 
-
+    private function get_agent_rank($rank_code = '')
+    {
+        $agent_rank = AgentRankList::get_rank_list();
+        if (!empty($agent_rank)) {
+            foreach ($agent_rank as $k => $v) {
+                if ($rank_code == $v['rank_code']) {
+                    return $v['rank_name'];
+                }
+            }
+        }
     }
 }
 

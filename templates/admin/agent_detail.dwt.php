@@ -99,8 +99,7 @@
                             <th>商家分类</th>
                             <th>负责人</th>
                             <th>手机号码</th>
-                            <th>申请时间</th>
-                            <th>状态</th>
+                            <th class="w130">申请时间</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,7 +110,6 @@
                             <td>{$val.responsible_person}</td>
                             <td>{$val.contact_mobile}</td>
                             <td>{$val.formated_apply_time}</td>
-                            <td></td>
                         </tr>
                         <!-- {foreachelse} -->
                         <tr>
