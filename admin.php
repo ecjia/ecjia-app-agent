@@ -400,6 +400,7 @@ class admin extends ecjia_admin
 
         $db_staff_user = RC_DB::table('staff_user as s')
             ->leftJoin('agent_user as a', RC_DB::raw('s.user_id'), '=', RC_DB::raw('a.user_id'))
+            ->where(RC_DB::raw('s.store_id'), 0)
             ->where(RC_DB::raw('s.group_id'), Ecjia\App\Staff\StaffGroupConstant::GROUP_AGENT);
 
         if (!empty($keywords)) {
@@ -531,7 +532,7 @@ class admin extends ecjia_admin
                     $val['formated_apply_time'] = RC_Time::local_date(ecjia::config('time_format'), $val['apply_time']);
                 }
                 $val['category_name'] = RC_DB::table('merchants_category')->where('cat_id', $val['cat_id'])->pluck('cat_name');
-                
+
                 $data[] = $val;
             }
         }
