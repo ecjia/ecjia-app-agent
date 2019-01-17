@@ -340,6 +340,11 @@ class admin extends ecjia_admin
         if (empty($data)) {
             return ecjia_front::$controller->showmessage('该代理商不存在', ecjia::MSGTYPE_HTML | ecjia::MSGSTAT_ERROR);
         }
+
+        $rank_info          = $this->get_agent_rank($data['rank_code']);
+        $data['rank_name']  = $rank_info['rank_name'];
+        $data['rank_alias'] = $rank_info['rank_alias'];
+
         $this->assign('data', $data);
 
         $count = $this->get_count_info($id);
@@ -429,7 +434,8 @@ class admin extends ecjia_admin
                 if (!empty($val['add_time'])) {
                     $val['add_time']    = RC_Time::local_date(ecjia::config('time_format'), $val['add_time']);
                     $val['area_region'] = ecjia_region::getRegionName($val['province']) . ' ' . ecjia_region::getRegionName($val['city']) . ' ' . ecjia_region::getRegionName($val['district']);
-                    $val['rank_name']   = $this->get_agent_rank($val['rank_code']);
+                    $rank_info          = $this->get_agent_rank($val['rank_code']);
+                    $val['rank_name']   = $rank_info['rank_name'];
 
                     if ($val['rank_code'] == 'province_agent') {
                         $val['store_count'] = RC_DB::table('store_franchisee')->where('province', $val['province'])->count();
@@ -559,7 +565,7 @@ class admin extends ecjia_admin
         if (!empty($agent_rank)) {
             foreach ($agent_rank as $k => $v) {
                 if ($rank_code == $v['rank_code']) {
-                    return $v['rank_name'];
+                    return array('rank_name' => $v['rank_name'], 'rank_alias' => $v['rank_alias']);
                 }
             }
         }

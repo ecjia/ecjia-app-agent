@@ -47,7 +47,7 @@
                             <td>
                                 <div align="right"><strong>代理等级：</strong></div>
                             </td>
-                            <td>{$data.agent_rank}</td>
+                            <td>{$data.rank_name}{if $data.rank_alias}<span class="ecjiafc-999">（别名：{$data.rank_alias}）</span>{/if}</td>
                         </tr>
                         <tr>
                             <td>
