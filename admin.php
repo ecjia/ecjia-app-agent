@@ -111,12 +111,7 @@ class admin extends ecjia_admin
         $this->assign('form_action', RC_Uri::url('agent/admin/insert'));
 
         $province = ecjia_region::getSubarea(ecjia::config('shop_country'));
-        $city     = ecjia_region::getSubarea();
-        $district = ecjia_region::getSubarea();
-
         $this->assign('province', $province);
-        $this->assign('city', $city);
-        $this->assign('district', $district);
 
         $agent_rank_list = ecjia::config('agent_rank');
         if (empty($agent_rank_list)) {
