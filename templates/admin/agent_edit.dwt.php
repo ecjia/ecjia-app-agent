@@ -80,18 +80,23 @@
                         <option value="{$region.region_id}" {if $region.region_id eq $data.province}selected{/if}>{$region.region_name}</option>
                         <!-- {/foreach} -->
                     </select>
-                    <select class="region-summary-cities span2" name="city" id="selCities" data-toggle="regionSummary" data-type="3" data-target="region-summary-district">
-                        <option value='0'>{lang key='system::system.select_please'}</option>
-                        <!-- {foreach from=$city item=region} -->
-                        <option value="{$region.region_id}" {if $region.region_id eq $data.city}selected{/if}>{$region.region_name}</option>
-                        <!-- {/foreach} -->
-                    </select>
-                    <select class="region-summary-district span2" name="district" id="seldistrict">
-                        <option value='0'>{lang key='system::system.select_please'}</option>
-                        <!-- {foreach from=$district item=region} -->
-                        <option value="{$region.region_id}" {if $region.region_id eq $data.district}selected{/if}>{$region.region_name}</option>
-                        <!-- {/foreach} -->
-                    </select>
+                    <div class="span2 {if $data.rank_code eq 'province_agent'}hide{/if}" style="margin-left: 0;">
+                        <select class="region-summary-cities" name="city" id="selCities" data-toggle="regionSummary" data-type="3" data-target="region-summary-district">
+                            <option value='0'>{lang key='system::system.select_please'}</option>
+                            <!-- {foreach from=$city item=region} -->
+                            <option value="{$region.region_id}" {if $region.region_id eq $data.city}selected{/if}>{$region.region_name}</option>
+                            <!-- {/foreach} -->
+                        </select>
+                    </div>
+
+                    <div class="span2 {if $data.rank_code eq 'province_agent' || $data.rank_code eq 'city_agent'}hide{/if}" style="margin-left: 5px;">
+                        <select class="region-summary-district" name="district" id="seldistrict">
+                            <option value='0'>{lang key='system::system.select_please'}</option>
+                            <!-- {foreach from=$district item=region} -->
+                            <option value="{$region.region_id}" {if $region.region_id eq $data.district}selected{/if}>{$region.region_name}</option>
+                            <!-- {/foreach} -->
+                        </select>
+                    </div>
                 </div>
             </div>
 

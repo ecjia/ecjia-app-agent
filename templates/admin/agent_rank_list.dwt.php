@@ -33,7 +33,7 @@
                 <tr>
                     <td>{$val.rank_name}</td>
                     <td>{$val.rank_alias}</td>
-                    <td>{$val.affiliate_percent}</td>
+                    <td>{$val.affiliate_percent}%</td>
                     <td>
                         <a class="data-pjax" href="{RC_Uri::url('agent/admin_rank/edit')}&id={$k+1}"><i class="fontello-icon-edit"></i></a>
                     </td>

@@ -75,6 +75,14 @@
             $('input[name="agent_rank"]').off('click').on('click', function () {
                 var $this = $(this),
                     val = $this.val();
+
+                $('.choose_list').find('div').removeClass('hide');
+                if (val == 'province_agent') {
+                    $('#selCities').parent('div').addClass('hide');
+                    $('#seldistrict').parent('div').addClass('hide');
+                } else if (val == 'city_agent') {
+                    $('#seldistrict').parent('div').addClass('hide');
+                }
             });
         },
     };
