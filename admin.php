@@ -132,7 +132,7 @@ class admin extends ecjia_admin
 
         $name           = trim($_POST['agent_name']);
         $mobile_phone   = trim($_POST['mobile_phone']);
-        $email          = trim($_POST['email']);
+        $email          = !empty($_POST['email']) ? trim($_POST['email']) : '';
         $login_password = trim($_POST['login_password']);
         $salt           = rand(1, 9999);
         $rank_code      = trim($_POST['agent_rank']);
@@ -250,7 +250,7 @@ class admin extends ecjia_admin
         $id             = intval($_POST['id']);
         $name           = trim($_POST['agent_name']);
         $mobile_phone   = trim($_POST['mobile_phone']);
-        $email          = trim($_POST['email']);
+        $email          = !empty($_POST['email']) ? trim($_POST['email']) : '';
         $login_password = trim($_POST['new_password']);
         $rank_code      = trim($_POST['agent_rank']);
         $province       = trim($_POST['province']);
