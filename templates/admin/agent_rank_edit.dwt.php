@@ -29,7 +29,7 @@
                 <label class="control-label">等级别名：</label>
                 <div class="controls">
                     <input class="span6" type="text" name="rank_alias" value="{$data.rank_alias}" />
-                    <span class="help-block">您可将等级名称重新命名，未填写时直接显示本名，只影响到前台用户端的显示，不会对后台功能名称作影响</span>
+                    <span class="help-block">您可将等级名称重新命名，未填写时直接显示本名，只影响到代理商的显示，不会对后台功能名称作影响</span>
                 </div>
             </div>
 
