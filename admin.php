@@ -503,7 +503,7 @@ class admin extends ecjia_admin
             $count = $db->where('district', $data['district'])->count();
         }
         $page   = new ecjia_page($count, 15, 5);
-        $result = $db->take(15)->skip($page->start_id - 1)->get();
+        $result = $db->take(15)->skip($page->start_id - 1)->orderBy('apply_time', 'desc')->get();
 
         $data = [];
         if (!empty($result)) {
