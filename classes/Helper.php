@@ -55,8 +55,6 @@ class Helper
      */
     public static function assign_adminlog_content()
     {
-        ecjia_admin_log::instance()->add_action();
-        
         ecjia_admin_log::instance()->add_object('agent', '代理商');
         ecjia_admin_log::instance()->add_object('agent_rank', '代理等级');
     }

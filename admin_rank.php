@@ -172,12 +172,6 @@ class admin_rank extends ecjia_admin
 
         return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin_rank/edit', array('id' => $id))));
     }
-
-    public function delete()
-    {
-        $this->admin_priv('agent_rank_delete', ecjia::MSGTYPE_JSON);
-    }
-
 }
 
 // end
