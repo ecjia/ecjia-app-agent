@@ -408,7 +408,8 @@ class admin extends ecjia_admin
 
         if (!empty($keywords)) {
             $db_staff_user->where(function ($query) use ($keywords) {
-                $query->where(RC_DB::raw('s.name'), 'like', '%' . mysql_like_quote($keywords) . '%')->orWhere(RC_DB::raw('s.mobile'), 'like', '%' . mysql_like_quote($keywords) . '%');
+                $query->where(RC_DB::raw('s.name'), 'like', '%' . mysql_like_quote($keywords) . '%')
+                    ->orWhere(RC_DB::raw('s.mobile'), 'like', '%' . mysql_like_quote($keywords) . '%');
             });
         }
 
