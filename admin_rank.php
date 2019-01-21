@@ -94,7 +94,7 @@ class admin_rank extends ecjia_admin
         $this->assign('ur_here', '代理等级');
 
         $agent_rank = ecjia::config('agent_rank');
-        $agent_rank = [];//test
+
         if (empty($agent_rank)) {
             $agent_rank = AgentRankList::get_rank_list();
 
