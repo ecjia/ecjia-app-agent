@@ -58,6 +58,8 @@ class admin_rank extends ecjia_admin
 
         RC_Loader::load_app_class('AgentRankList', 'agent', false);
 
+        Ecjia\App\Agent\Helper::assign_adminlog_content();
+
         /* 加载全局 js/css */
         RC_Script::enqueue_script('jquery-validate');
         RC_Script::enqueue_script('jquery-form');
@@ -148,10 +150,13 @@ class admin_rank extends ecjia_admin
             return $this->showmessage('分成比例不能大于或等于100%', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
+        $rank_name = '';
         if (!empty($agent_rank)) {
-            $agent_rank          = unserialize($agent_rank);
+            $agent_rank = unserialize($agent_rank);
+            $rank_name  = $agent_rank[$id - 1]['rank_name'];
+
             $agent_rank[$id - 1] = [
-                'rank_name'         => $agent_rank[$id - 1]['rank_name'],
+                'rank_name'         => $rank_name,
                 'rank_alias'        => $rank_alias,
                 'affiliate_percent' => $affiliate_percent
             ];
@@ -162,6 +167,8 @@ class admin_rank extends ecjia_admin
         ecjia_config::instance()->write_config('agent_rank', $agent_rank);
 
         $this->admin_priv('agent_rank_update', ecjia::MSGTYPE_JSON);
+
+        ecjia_admin::admin_log($rank_name, 'edit', 'agent_rank');
 
         return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin_rank/edit', array('id' => $id))));
     }

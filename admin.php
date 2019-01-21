@@ -59,6 +59,8 @@ class admin extends ecjia_admin
         RC_Loader::load_app_class('AgentRankList', 'agent', false);
         RC_Loader::load_app_class('Agent', 'agent', false);
 
+        Ecjia\App\Agent\Helper::assign_adminlog_content();
+
         /* 加载全局 js/css */
         RC_Script::enqueue_script('jquery-validate');
         RC_Script::enqueue_script('jquery-form');
@@ -207,6 +209,8 @@ class admin extends ecjia_admin
         }
         RC_DB::table('agent_user')->insert($insert_data);
 
+        ecjia_admin::admin_log($name, 'add', 'agent');
+
         return $this->showmessage('添加成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin/edit', array('id' => $id))));
     }
 
@@ -318,6 +322,7 @@ class admin extends ecjia_admin
         }
         RC_DB::table('agent_user')->where('user_id', $id)->update($update_data);
 
+        ecjia_admin::admin_log($name, 'edit', 'agent');
 
         return $this->showmessage('编辑成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin/edit', array('id' => $id))));
     }
@@ -358,8 +363,12 @@ class admin extends ecjia_admin
 
         $id = intval($_GET['id']);
 
+        $data = Agent::get_agent_info($id);
+
         RC_DB::table('staff_user')->where('user_id', $id)->delete();
         RC_DB::table('agent_user')->where('user_id', $id)->delete();
+
+        ecjia_admin::admin_log($data['name'], 'remove', 'agent');
 
         return $this->showmessage('删除成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
     }
@@ -373,8 +382,16 @@ class admin extends ecjia_admin
             return $this->showmessage('请先选择要删除的代理商', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
+        $name_list = RC_DB::table('staff_user')->whereIn('user_id', $id)->lists('name');
+
         RC_DB::table('staff_user')->whereIn('user_id', $id)->delete();
         RC_DB::table('agent_user')->whereIn('user_id', $id)->delete();
+
+        if (!empty($name_list)) {
+            foreach ($name_list as $v) {
+                ecjia_admin::admin_log($v, 'batch_remove', 'agent');
+            }
+        }
 
         return $this->showmessage('删除成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin/init')));
     }
@@ -407,7 +424,7 @@ class admin extends ecjia_admin
 
         $count  = $db_staff_user->count();
         $page   = new ecjia_page($count, 15, 5);
-        $result = $db_staff_user->take(15)->skip($page->start_id - 1)->get();
+        $result = $db_staff_user->take(15)->skip($page->start_id - 1)->orderBy(RC_DB::raw('s.add_time'), 'desc')->get();
 
         $data = [];
         if (!empty($result)) {
