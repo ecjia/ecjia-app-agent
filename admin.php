@@ -376,7 +376,7 @@ class admin extends ecjia_admin
         RC_DB::table('staff_user')->whereIn('user_id', $id)->delete();
         RC_DB::table('agent_user')->whereIn('user_id', $id)->delete();
 
-        return $this->showmessage('删除成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+        return $this->showmessage('删除成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('agent/admin/init')));
     }
 
     private function get_agent_list()
