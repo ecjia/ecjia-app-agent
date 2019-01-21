@@ -94,6 +94,7 @@ class admin_rank extends ecjia_admin
         $this->assign('ur_here', '代理等级');
 
         $agent_rank = ecjia::config('agent_rank');
+        $agent_rank = [];//test
         if (empty($agent_rank)) {
             $agent_rank = AgentRankList::get_rank_list();
 
@@ -154,11 +155,13 @@ class admin_rank extends ecjia_admin
         if (!empty($agent_rank)) {
             $agent_rank = unserialize($agent_rank);
             $rank_name  = $agent_rank[$id - 1]['rank_name'];
+            $rank_code  = $agent_rank[$id - 1]['rank_code'];
 
             $agent_rank[$id - 1] = [
                 'rank_name'         => $rank_name,
                 'rank_alias'        => $rank_alias,
-                'affiliate_percent' => $affiliate_percent
+                'affiliate_percent' => $affiliate_percent,
+                'rank_code'         => $rank_code
             ];
 
             $agent_rank = serialize($agent_rank);
