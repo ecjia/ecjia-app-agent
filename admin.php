@@ -457,7 +457,7 @@ class admin extends ecjia_admin
             return new ecjia_error('rank_code_required', '请选择代理等级');
         }
 
-        $db_agent_user = RC_DB::table('agent_user');
+        $db_agent_user = RC_DB::table('agent_user')->where('rank_code', $rank_code);
 
         if (!empty($user_id)) {
             $db_agent_user->where('user_id', '!=', $user_id);
