@@ -42,14 +42,14 @@
                     agent_name: {required: true},
                     mobile_phone: {required: true},
                     login_password: {required: true},
-                    // rank_alias: {required: true},
+                    email: {required: true},
                     affiliate_percent: {required: true}
                 },
                 messages: {
                     agent_name: {required: "请输入代理商名称！"},
                     mobile_phone: {required: "请输入手机号码！"},
                     login_password: {required: "请输入登录密码！"},
-                    // rank_alias: {required: "请输入等级别名！"},
+                    email: {required: "请输入邮箱账号！"},
                     affiliate_percent: {required: "请输入分红比例！"}
                 },
                 submitHandler: function () {

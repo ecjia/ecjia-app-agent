@@ -149,6 +149,10 @@ class admin extends ecjia_admin
         if (empty($mobile_phone)) {
             return $this->showmessage('请输入手机号码', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
+        
+        if (empty($email)) {
+            return $this->showmessage('请输入邮箱账号', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
 
         if (empty($login_password)) {
             return $this->showmessage('请输入登录密码', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
@@ -170,8 +174,8 @@ class admin extends ecjia_admin
         }
 
         $email_count = RC_DB::table('staff_user')->where('email', $email)->count();
-        if (!empty($email) && $email_count > 0) {
-            return $this->showmessage('该邮件账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        if ($email_count > 0) {
+            return $this->showmessage('该邮箱账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
 
@@ -273,6 +277,9 @@ class admin extends ecjia_admin
         if (empty($mobile_phone)) {
             return $this->showmessage('请输入手机号码', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
+        if (empty($email)) {
+            return $this->showmessage('请输入邮箱账号', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
 
         $name_count = RC_DB::table('staff_user')->where('name', $name)->where('user_id', '!=', $id)->count();
         if ($name_count > 0) {
@@ -290,8 +297,8 @@ class admin extends ecjia_admin
         }
 
         $email_count = RC_DB::table('staff_user')->where('email', $email)->where('user_id', '!=', $id)->count();
-        if (!empty($email) && $email_count > 0) {
-            return $this->showmessage('该邮件账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        if ($email_count > 0) {
+            return $this->showmessage('该邮箱账号已存在', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
         $check_rank = $this->check_rank_code($rank_code, $province, $city, $district, $id);

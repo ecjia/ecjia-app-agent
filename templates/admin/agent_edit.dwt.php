@@ -40,6 +40,7 @@
                 <label class="control-label">邮箱账号：</label>
                 <div class="controls">
                     <input class="span6" type="text" name="email" value="{$data.email}" />
+                    <span class="input-must">{lang key='system::system.require_field'}</span>
                 </div>
             </div>
 
