@@ -85,7 +85,7 @@ class admin extends ecjia_admin
 
         RC_Script::localize_script('agent', 'js_lang', config('app-agent::jslang.agent_page'));
 
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('代理商列表', RC_Uri::url('agent/admin/init')));
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('代理商列表', 'agent'), RC_Uri::url('agent/admin/init')));
     }
 
     public function init()
